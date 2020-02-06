@@ -23,11 +23,18 @@ namespace RSS_Reader.XML_Parser
                     );
         }
 
-
         public static T Parse<T>(XmlNode element) where T : new()
         {
+            T item = new T();
+            ParseInto<T>(element, item);
+
+            return item;
+        }
+
+
+        public static void ParseInto<T>(XmlNode element, T item) where T : new()
+        {
             var elementChilds = element.ChildNodes;
-            var item = new T();
             var propertiesDict = GetPropertyInfo(item);
 
             for (int i = 0; i < elementChilds.Count; i++)
@@ -52,7 +59,6 @@ namespace RSS_Reader.XML_Parser
                     property.SetValue(item, toSet);
                 }
             }
-            return item;
         }
 
         private static object Fill(XmlNode child, PropertyInfo property)

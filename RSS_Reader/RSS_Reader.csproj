@@ -54,6 +54,8 @@
     <Compile Include="RSS_Classes\Channel.cs" />
     <Compile Include="RSS_Classes\Image.cs" />
     <Compile Include="RSS_Classes\Item.cs" />
+    <Compile Include="Worker\IWorker.cs" />
+    <Compile Include="Worker\RSSWorker.cs" />
     <Compile Include="XML_Parser\IXML.cs" />
     <Compile Include="XML_Parser\XMLPropertyAttributte.cs" />
     <Compile Include="XML_Parser\XMLParser.cs" />
@@ -62,5 +64,6 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

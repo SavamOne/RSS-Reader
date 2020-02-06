@@ -18,5 +18,13 @@ namespace RSS_Reader.RSS_Classes
         [CanBeNull]
         [XMLProperty("pubDate")]
         public DateTime PubDate { get; set; }
+
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Item item)
+                return Title.Equals(item.Title);
+            return false;
+        }
     }
 }
