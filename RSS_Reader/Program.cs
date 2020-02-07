@@ -2,8 +2,7 @@
 using RSS_Reader.Worker;
 using RSS_Reader.XML_Parser;
 using System.Net;
-using System.Threading;
-using System.Xml;
+using System;
 
 namespace RSS_Reader
 {
@@ -11,14 +10,21 @@ namespace RSS_Reader
     {
         static void Main(string[] args)
         {
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072;
-            ServicePointManager.DefaultConnectionLimit = 9999;
-
-
             var worker = new RSSWorker("https://lenta.ru/rss/news", 30000);
+            worker.OnNewItemsAdded += Worker_GotNewItems;
+            worker.Start();
 
-            System.Console.ReadLine();
+            var worker2 = new RSSWorker("https://habr.com/ru/rss/interesting/", 30000);
+            worker2.OnNewItemsAdded += Worker_GotNewItems;
+            worker2.Start();
+
+            Console.ReadLine();
+        }
+
+        private static void Worker_GotNewItems(StoreClass store)
+        {
+            store.ItemsAll.ForEach(x => System.Console.WriteLine($"{store.Title} : {x.Title}"));
+            Console.WriteLine($"{store.Title} : {store.ItemsAll.Count}");
         }
     }
 }

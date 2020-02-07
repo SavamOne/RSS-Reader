@@ -1,6 +1,7 @@
 ﻿using JetBrains.Annotations;
 using RSS_Reader.XML_Parser;
 using System;
+using System.Collections.Generic;
 
 namespace RSS_Reader.RSS_Classes
 {
@@ -19,12 +20,27 @@ namespace RSS_Reader.RSS_Classes
         [XMLProperty("pubDate")]
         public DateTime PubDate { get; set; }
 
-
         public override bool Equals(object obj)
         {
             if (obj is Item item)
-                return Title.Equals(item.Title);
+            {
+                if (item == null)
+                    return false;
+
+                if (ReferenceEquals(this, item))
+                    return true;
+
+                if (string.Compare(Title, item.Title) != 0)
+                    return false;
+
+                return true;
+            }
             return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return Title?.GetHashCode() ?? throw new Exception("Title is null. Cannot get hashcode");
         }
     }
 }

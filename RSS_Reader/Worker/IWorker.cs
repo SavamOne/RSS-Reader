@@ -2,13 +2,11 @@
 
 namespace RSS_Reader.Worker
 {
+    
     interface IWorker
     {
-        Timer Timer { get; set; }
+        void Start();
 
-        double Interval { get; set; }
-
-        bool WorkIsDone { get; set; }
-
+        void Stop();
     }
 }

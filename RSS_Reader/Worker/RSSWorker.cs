@@ -1,81 +1,83 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Timers;
 using System.Threading.Tasks;
 using RSS_Reader.RSS_Classes;
 using System.Xml;
 using RSS_Reader.XML_Parser;
+using System.Net;
 
 namespace RSS_Reader.Worker
 {
-    class RSSWorker : Channel, IWorker
+    class RSSWorker : StoreClass, IWorker
     {
-        public Timer Timer { get; set; }
+        public delegate void newItemsAdded(StoreClass store);
 
-        public double Interval { get; set; }
+        public event newItemsAdded OnNewItemsAdded;
 
-        public string Source { get; set; }
+        private Timer Timer { get; }
 
-        public bool WorkIsDone { get; set; }
+        public double Interval { get; }
 
-        public XmlDocument Document { get; set; }
+        public string Source { get; }
 
-        object locker = new object();
+        private XmlDocument Document { get; }
 
-        public List<Item> ItemsAll { get; set; }
+        private object Locker { get; } = new object();
 
-
+        
         public RSSWorker(string source, ulong timeout)
         {
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072;
+            ServicePointManager.DefaultConnectionLimit = 9999;
+
             Interval = timeout;
             Source = source;
 
             Document = new XmlDocument();
 
-            WorkIsDone = true;
-
             ItemsAll = new List<Item>();
 
             Timer = new Timer(Interval);
 
-            Timer.Elapsed += DoWork;
-            Timer.Enabled = true;
+            Timer.Elapsed += ((s, e) => DoWork());
             Timer.AutoReset = true;
-
-            Task.Run(() => DoWork(null, null));
         }
 
-        private void DoWork(object sender, ElapsedEventArgs e)
+        public void Start()
         {
-            lock(locker)
+            Timer.Start();
+            Task.Run(() => DoWork());
+        }
+
+        public void Stop()
+        {
+            Timer.Stop();
+        }
+
+        private void DoWork()
+        {
+            lock (Locker)
             {
+                bool isSmthngNew = false;
                 Document.Load(Source);
 
                 XMLParser.ParseInto<Channel>(Document.DocumentElement["channel"], this);
 
-                for(int i = 0; i < Items.Count; i++)
+                for (int i = 0; i < Items.Count; i++)
                 {
-                    if(ItemsAll.Count <= i || !ItemsAll[i].Equals(Items[i]))
+                    if (ItemsAll.Count <= i || !ItemsAll[i].Equals(Items[i]))
                     {
                         ItemsAll.Insert(i, Items[i]);
+                        isSmthngNew = true;
                     }
                     else
-                    {
                         break;
-                    }
                 }
 
-
-                foreach(var item in ItemsAll)
-                {
-                    Console.WriteLine(item.Title);
-                }
-                Console.WriteLine(ItemsAll.Count);
+                if (isSmthngNew)
+                    OnNewItemsAdded(this);
             }
-                Console.WriteLine("------------------------------------------------------------------");
         }
-
     }
 }
