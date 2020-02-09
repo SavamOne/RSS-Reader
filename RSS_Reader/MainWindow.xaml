@@ -1,0 +1,61 @@
+﻿<Window x:Class="RSS_Reader.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:model="clr-namespace:RSS_Reader"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800"
+        Background="AliceBlue">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="10*"/>
+        </Grid.ColumnDefinitions>
+
+        <ListView Grid.Column="0" x:Name="SoucesView" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <TextBlock Text="{Binding Title}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <ListView Grid.Column="1" x:Name="FeedView" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <TextBlock Text="{Binding Title}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
+                        <TextBlock Text="{Binding PubDate }" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <!--<ListBox x:Name="lstBox" DisplayMemberPath="{Binding Title}">
+        </ListBox>-->
+
+        <Image Grid.Column="1" Height="100px" Width="100px" x:Name="image" Source="{Binding}" Margin="47.6,156,50.8,164">
+            
+        </Image>
+
+        <WebBrowser Grid.Column="2" x:Name="content">
+            
+        </WebBrowser>
+
+        <!--<ListBox Grid.Column="0" x:Name="RSS_Sources" Background="Aqua">
+
+        </ListBox>-->
+        <!--<ListBox Grid.Column="1" x:Name="RSS_Feed" Background="DeepPink">
+
+        </ListBox>
+        
+        <TextBlock Grid.Column="2" Name="RSS_Item" Background="Bisque">
+            
+        </TextBlock>-->
+
+    </Grid>
+</Window>

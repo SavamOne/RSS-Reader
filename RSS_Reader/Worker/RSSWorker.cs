@@ -5,6 +5,10 @@ using RSS_Reader.RSS_Classes;
 using System.Xml;
 using RSS_Reader.XML_Parser;
 using System.Net;
+using System.Collections.ObjectModel;
+using System.Windows.Threading;
+using System;
+using System.Threading;
 
 namespace RSS_Reader.Worker
 {
@@ -14,9 +18,9 @@ namespace RSS_Reader.Worker
 
         public event newItemsAdded OnNewItemsAdded;
 
-        private Timer Timer { get; }
+        private DispatcherTimer Timer { get; }
 
-        public double Interval { get; }
+        public double Interval { get; private set; }
 
         public string Source { get; }
 
@@ -25,29 +29,38 @@ namespace RSS_Reader.Worker
         private object Locker { get; } = new object();
 
         
-        public RSSWorker(string source, ulong timeout)
+        public RSSWorker(string source, double interval)
         {
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072;
             ServicePointManager.DefaultConnectionLimit = 9999;
 
-            Interval = timeout;
+            Interval = interval;
             Source = source;
 
             Document = new XmlDocument();
 
             ItemsAll = new List<Item>();
+            ItemsDelta = new List<Item>();
 
-            Timer = new Timer(Interval);
+            Timer = new DispatcherTimer();
+            Timer.Interval = TimeSpan.FromMilliseconds(interval);
 
-            Timer.Elapsed += ((s, e) => DoWork());
-            Timer.AutoReset = true;
+            Timer.Tick += (async (s, e) => await DoWorkAsync());
         }
 
-        public void Start()
+        public void ChangeInterval(double interval)
+        {
+            Interval = interval;
+            Timer.Stop();
+            Timer.Interval = TimeSpan.FromMilliseconds(Interval);
+            Timer.Start();
+        }
+
+        public Task Start()
         {
             Timer.Start();
-            Task.Run(() => DoWork());
+            return DoWorkAsync();
         }
 
         public void Stop()
@@ -55,29 +68,33 @@ namespace RSS_Reader.Worker
             Timer.Stop();
         }
 
-        private void DoWork()
+        private async Task DoWorkAsync()
         {
-            lock (Locker)
+            bool isSmthngNew = false;
+            await Task.Run(() =>
             {
-                bool isSmthngNew = false;
-                Document.Load(Source);
-
-                XMLParser.ParseInto<Channel>(Document.DocumentElement["channel"], this);
-
-                for (int i = 0; i < Items.Count; i++)
+                lock (Locker)
                 {
-                    if (ItemsAll.Count <= i || !ItemsAll[i].Equals(Items[i]))
-                    {
-                        ItemsAll.Insert(i, Items[i]);
-                        isSmthngNew = true;
-                    }
-                    else
-                        break;
-                }
+                    Document.Load(Source);
 
-                if (isSmthngNew)
-                    OnNewItemsAdded(this);
-            }
+                    XMLParser.ParseInto<Channel>(Document.DocumentElement["channel"], this);
+
+                    ItemsDelta.Clear();
+                    for (int i = 0; i < Items.Count; i++)
+                    {
+                        if (ItemsAll.Count <= i || !ItemsAll[i].Equals(Items[i]))
+                        {
+                            ItemsAll.Insert(i, Items[i]);
+                            ItemsDelta.Insert(i, Items[i]);
+                            isSmthngNew = true;
+                        }
+                        else
+                            break;
+                    }
+                }
+            });
+            if (isSmthngNew)
+                OnNewItemsAdded(this);
         }
     }
 }

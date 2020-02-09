@@ -1,11 +1,12 @@
-﻿using System.Timers;
+﻿using System.Threading.Tasks;
+using System.Timers;
 
 namespace RSS_Reader.Worker
 {
     
     interface IWorker
     {
-        void Start();
+        Task Start();
 
         void Stop();
     }

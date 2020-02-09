@@ -1,5 +1,4 @@
-﻿using JetBrains.Annotations;
-using RSS_Reader.XML_Parser;
+﻿using RSS_Reader.XML_Parser;
 using System;
 using System.Collections.Generic;
 
@@ -16,7 +15,6 @@ namespace RSS_Reader.RSS_Classes
         [XMLProperty("description")]
         public string Description { get; set; }
 
-        [CanBeNull]
         [XMLProperty("pubDate")]
         public DateTime PubDate { get; set; }
 
