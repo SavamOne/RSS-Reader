@@ -1,14 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Timers;
-using System.Threading.Tasks;
-using RSS_Reader.RSS_Classes;
-using System.Xml;
+﻿using RSS_Reader.RSS_Classes;
 using RSS_Reader.XML_Parser;
-using System.Net;
-using System.Collections.ObjectModel;
-using System.Windows.Threading;
 using System;
-using System.Threading;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
+using System.Windows.Threading;
+using System.Xml;
 
 namespace RSS_Reader.Worker
 {
