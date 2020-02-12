@@ -8,9 +8,9 @@ using System.Windows.Media.Imaging;
 
 namespace RSS_Reader
 {
-    class MainViewModel : INotifyPropertyChanged
+    public class MainViewModel : INotifyPropertyChanged
     {
-        private RSSWorker Worker {get;}
+        public RSSWorker Worker {get;}
 
         public MainViewModel(string source, double interval)
         {
@@ -46,6 +46,21 @@ namespace RSS_Reader
             bitmapImage.UriSource = link;
             bitmapImage.EndInit();
             Image = bitmapImage;
+        }
+
+        public double Interval
+        {
+            get => Worker.Interval;
+            set
+            {
+                Worker.ChangeInterval(value);
+                OnPropertyChanged("Interval");
+            }
+        }
+
+        public string Source
+        {
+            get => Worker.Source;
         }
 
         public BitmapImage Image

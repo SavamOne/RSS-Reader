@@ -1,54 +1,104 @@
-﻿using System.Collections.ObjectModel;
+﻿using RSS_Reader.Models;
+using RSS_Reader.Config_Classes;
+using RSS_Reader.RSS_Classes;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Navigation;
+using RSS_Reader.Utils;
 
 namespace RSS_Reader
 {
     public partial class MainWindow : Window
     {
-        ObservableCollection<MainViewModel> workers;
+        ObservableCollection<MainViewModel> ViewModels { get; }
+
+        List<Parameters> Params { get; }
 
         public MainWindow()
         {
             InitializeComponent();
-            workers = new ObservableCollection<MainViewModel>();
-            workers.Add(new MainViewModel("https://habr.com/ru/rss/interesting/", 30000));
-            workers.Add(new MainViewModel("https://lenta.ru/rss/news/", 30000));
-            workers.Add(new MainViewModel("https://lifehacker.ru/feed/", 30000));
-            workers.Add(new MainViewModel("https://www.ixbt.com/export/articles.rss", 30000));
 
-            SoucesView.ItemsSource = workers;
-            FeedView.ItemsSource = workers[0].Items;
+       
+            ViewModels = new ObservableCollection<MainViewModel>();
+            ViewModels.CollectionChanged += ViewModels_CollectionChanged;
+
+            Params = new List<Parameters>();
+
+            foreach(var param in ConfigReaderWriter.Read())
+            {
+                if(param.Interval > 1 && RSSChecker.Check(param.URL))
+                    ViewModels.Add(new MainViewModel(param.URL, param.Interval));
+            }
+
+            SoucesView.ItemsSource = ViewModels;
+
+            if(ViewModels.Count > 0) 
+                FeedView.ItemsSource = ViewModels[0].Items;
+
             FeedView.SelectionChanged += LstBox_SelectionChanged;
-            SoucesView.SelectionChanged += SoucesView_SelectionChanged;
 
+            SoucesView.SelectionChanged += SoucesView_SelectionChanged;
+        }
+
+        private void ViewModels_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                int index = e.NewStartingIndex;
+                Params.Add(new Parameters(ViewModels[index].Source, ViewModels[index].Interval));
+
+                ViewModels[index].PropertyChanged += (s, pce) => ViewModel_PropertyChanged(s, pce, index);
+                ConfigReaderWriter.Write(Params);
+            }
+
+            if (e.OldItems != null)
+            {
+                int index = e.OldStartingIndex;
+                Params.RemoveAt(index);
+                ConfigReaderWriter.Write(Params);
+            }
+
+        }
+
+        private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e, int index)
+        {
+            if(e.PropertyName == "Interval")
+            {
+                Params[index].Interval = ViewModels[index].Interval;
+                ConfigReaderWriter.Write(Params);
+            }
         }
 
         private void SoucesView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            FeedView.ItemsSource = workers[SoucesView.SelectedIndex].Items;
+            FeedView.ItemsSource = (SoucesView.SelectedValue as MainViewModel)?.Items;
         }
 
         private void LstBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var sourceIndex = SoucesView.SelectedIndex != -1 ? SoucesView.SelectedIndex : 0;
-            var feedIndex = FeedView.SelectedIndex != -1 ? FeedView.SelectedIndex : 0;
-
-            content.NavigateToString(workers[sourceIndex].Items[feedIndex].Description);
-            //content.Navigate(")
+        {   
+            var item = FeedView.SelectedValue as Item;
+            if (item != null)
+            {
+                var html = DescriptionPrettifier.Prettify(item.Description);      
+                content.NavigateToString(html);
+            } 
         }
 
-        //private void content_Navigating(object sender, NavigatingCancelEventArgs e)
-        //{
-        //    if (e.Uri != null)
-        //    {
-        //        e.Cancel = true;
+        private void AddSource_Click(object sender, RoutedEventArgs e)
+        {
+            new EditSourcesWindow(ViewModels).ShowDialog();
+        }
 
-        //        Process.Start(e.Uri.ToString());
-        //    }
-        //}
+        private void OpenLink_Click(object sender, RoutedEventArgs e)
+        {
+            var item = FeedView.SelectedValue as Item;
+            if (item != null)
+                Process.Start(item.Link.ToString());
+        }
     }
 }

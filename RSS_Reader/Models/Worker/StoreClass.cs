@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RSS_Reader.Worker
 {
-    class StoreClass : Channel
+    public class StoreClass : Channel
     {
         public IList<Item> ItemsAll { get; set; }
 

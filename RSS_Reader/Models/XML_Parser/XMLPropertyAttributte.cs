@@ -2,7 +2,7 @@
 
 namespace RSS_Reader.XML_Parser
 {
-    class XMLPropertyAttribute : Attribute
+    public class XMLPropertyAttribute : Attribute
     {
         public string PropertyName { get; set; }
 

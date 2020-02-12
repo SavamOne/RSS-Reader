@@ -6,43 +6,60 @@
         mc:Ignorable="d"
         xmlns:converters="clr-namespace:RSS_Reader.Utils"
         Title="RSS Ридер" Height="450" Width="800"
+        x:Name="MainW"
         Background="#faf8f8">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="85px"/>
+            <ColumnDefinition Width="105px"/>
             <ColumnDefinition Width="8*"/>
             <ColumnDefinition Width="10*"/>
         </Grid.ColumnDefinitions>
-      
 
-        <ListView Grid.Column="0" 
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="25px"/>
+            </Grid.RowDefinitions>
+            <ListView Grid.Row="0" 
                   x:Name="SoucesView" 
                   HorizontalAlignment="Stretch" 
                   VerticalAlignment="Stretch" 
                   Background="Transparent" 
                   BorderThickness="0px">
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="HorizontalContentAlignment" 
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" 
                             Value="Center"/>
-                </Style>
-            </ListView.ItemContainerStyle>
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Vertical" 
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical" 
                                 VerticalAlignment="Stretch" 
                                 HorizontalAlignment="Stretch">
-                        <Ellipse Width="65px" 
+                            <Ellipse Width="65px" 
                                  Height="65px">
-                            <Ellipse.Fill>
-                                <ImageBrush ImageSource="{Binding Image}" 
+                                <Ellipse.Fill>
+                                    <ImageBrush ImageSource="{Binding Image}" 
                                             Stretch="Uniform"/>
-                            </Ellipse.Fill>
-                        </Ellipse>
-                    </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                                </Ellipse.Fill>
+                            </Ellipse>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Button Grid.Row="1" 
+                x:Name="ReadSource" 
+                VerticalAlignment="Stretch" 
+                HorizontalAlignment="Stretch" 
+                Content="Настройки" 
+                FontSize="12px" 
+                Foreground="#b3b3b3"
+                Background="#e6e6e6"
+                BorderThickness="0"
+                FontFamily="Segoe UI Black"
+                Click="AddSource_Click"/>
+        </Grid>
 
         <ListView Grid.Column="1" 
                   x:Name="FeedView" 
@@ -61,7 +78,7 @@
                     <StackPanel Orientation="Vertical" 
                                 VerticalAlignment="Stretch" 
                                 HorizontalAlignment="Stretch">
-                        <TextBlock Width="{Binding Path=ActualWidth, ElementName=FeedView, Converter={converters:WidthAddOnConverter}, ConverterParameter='-50'}"  
+                        <TextBlock Width="{Binding Path=ActualWidth, ElementName=FeedView, Converter={converters:AddOnConverter}, ConverterParameter='-50'}"  
                                    TextWrapping="WrapWithOverflow" 
                                    FontSize="14px" 
                                    FontFamily="Bahnschrift" 
@@ -86,7 +103,31 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <WebBrowser Grid.Column="2" 
-                    x:Name="content"/>
+
+
+
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="25px"/>
+            </Grid.RowDefinitions>
+            <WebBrowser Grid.Row="0" x:Name="content"
+                        VerticalAlignment="Stretch"
+                        />
+            <Button Grid.Row="1" x:Name="OpenLink" 
+                VerticalAlignment="Stretch" 
+                Content="Открыть источник" 
+                FontSize="12px" 
+                Foreground="#b3b3b3"
+                Background="#e6e6e6"
+                BorderThickness="0"
+                FontFamily="Segoe UI Black"
+                Click="OpenLink_Click"/>
+        </Grid>
+        
+
+
+        
+
     </Grid>
 </Window>

@@ -3,7 +3,7 @@ using System;
 
 namespace RSS_Reader.RSS_Classes
 {
-    class Image : IXML
+    public class Image : IXML
     {
         [XMLProperty("link")]
         public Uri Link { get; set; }

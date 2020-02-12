@@ -72,21 +72,29 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Utils\WidthAddOnConverter.cs" />
+    <Compile Include="EditSourcesWindow.xaml.cs">
+      <DependentUpon>EditSourcesWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Models\XML_Parser\XMLParserSerializer.cs" />
+    <Compile Include="Utils\DescriptionPrettifier.cs" />
+    <Compile Include="Utils\RSSChecker.cs" />
+    <Compile Include="Utils\ConfigReaderWriter.cs" />
+    <Compile Include="Models\XML_Parsing_Classes\Config_Classes\Parameters.cs" />
+    <Compile Include="Utils\AddOnConverter.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Models\RSS_Classes\Channel.cs" />
-    <Compile Include="Models\RSS_Classes\Image.cs" />
-    <Compile Include="Models\RSS_Classes\Item.cs" />
+    <Compile Include="Models\XML_Parsing_Classes\RSS_Classes\Channel.cs" />
+    <Compile Include="Models\XML_Parsing_Classes\RSS_Classes\Image.cs" />
+    <Compile Include="Models\XML_Parsing_Classes\RSS_Classes\Item.cs" />
     <Compile Include="Models\Worker\StoreClass.cs" />
     <Compile Include="Models\Worker\IWorker.cs" />
     <Compile Include="Models\Worker\RSSWorker.cs" />
     <Compile Include="Models\XML_Parser\IXML.cs" />
     <Compile Include="Models\XML_Parser\XMLPropertyAttributte.cs" />
-    <Compile Include="Models\XML_Parser\XMLParser.cs" />
+    <Compile Include="Models\XML_Parser\XMLParserDeserializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -96,6 +104,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="EditSourcesWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

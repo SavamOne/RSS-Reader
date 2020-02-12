@@ -5,9 +5,9 @@ using System.Windows.Markup;
 
 namespace RSS_Reader.Utils
 {
-    public class WidthAddOnConverter : MarkupExtension, IValueConverter
+    public class AddOnConverter : MarkupExtension, IValueConverter
     {
-        private static WidthAddOnConverter _instance;
+        private static AddOnConverter Instance;
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -21,7 +21,7 @@ namespace RSS_Reader.Utils
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            return _instance ?? (_instance = new WidthAddOnConverter());
+            return Instance ?? (Instance = new AddOnConverter());
         }
     }
 }

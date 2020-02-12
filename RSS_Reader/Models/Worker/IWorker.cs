@@ -2,7 +2,6 @@
 
 namespace RSS_Reader.Worker
 {
-
     interface IWorker
     {
         Task Start();

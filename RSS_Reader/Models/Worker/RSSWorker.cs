@@ -9,7 +9,7 @@ using System.Xml;
 
 namespace RSS_Reader.Worker
 {
-    class RSSWorker : StoreClass, IWorker
+    public class RSSWorker : StoreClass, IWorker
     {
         public delegate void newItemsAdded(StoreClass store);
 
@@ -40,8 +40,10 @@ namespace RSS_Reader.Worker
             ItemsAll = new List<Item>();
             ItemsDelta = new List<Item>();
 
-            Timer = new DispatcherTimer();
-            Timer.Interval = TimeSpan.FromMilliseconds(interval);
+            Timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(interval)
+            };
 
             Timer.Tick += (async (s, e) => await DoWorkAsync());
         }
@@ -52,6 +54,8 @@ namespace RSS_Reader.Worker
             Timer.Stop();
             Timer.Interval = TimeSpan.FromMilliseconds(Interval);
             Timer.Start();
+
+            Console.WriteLine("Новый интервал");
         }
 
         public Task Start()
@@ -72,21 +76,28 @@ namespace RSS_Reader.Worker
             {
                 lock (Locker)
                 {
-                    Document.Load(Source);
-
-                    XMLParser.ParseInto<Channel>(Document.DocumentElement["channel"], this);
-
-                    ItemsDelta.Clear();
-                    for (int i = 0; i < Items.Count; i++)
+                    try
                     {
-                        if (ItemsAll.Count <= i || !ItemsAll[i].Equals(Items[i]))
+                        Document.Load(Source);
+
+                        XMLParser.DeserializeInto<Channel>(Document.DocumentElement["channel"], this);
+
+                        ItemsDelta.Clear();
+                        for (int i = 0; i < Items.Count; i++)
                         {
-                            ItemsAll.Insert(i, Items[i]);
-                            ItemsDelta.Insert(i, Items[i]);
-                            isSmthngNew = true;
+                            if (ItemsAll.Count <= i || !ItemsAll[i].Equals(Items[i]))
+                            {
+                                ItemsAll.Insert(i, Items[i]);
+                                ItemsDelta.Insert(i, Items[i]);
+                                isSmthngNew = true;
+                            }
+                            else
+                                break;
                         }
-                        else
-                            break;
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.ToString());
                     }
                 }
             });

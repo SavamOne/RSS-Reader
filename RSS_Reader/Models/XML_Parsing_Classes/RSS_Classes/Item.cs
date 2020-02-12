@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace RSS_Reader.RSS_Classes
 {
-    class Item : IXML
+    public class Item : IXML
     {
         [XMLProperty("title")]
         public string Title { get; set; }
