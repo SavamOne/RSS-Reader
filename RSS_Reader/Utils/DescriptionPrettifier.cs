@@ -20,7 +20,7 @@ namespace RSS_Reader.Utils
             ACloseRE = new Regex("<\\/a>");
         }
 
-        public static string Prettify(string description)
+        public static string PrettifyDescription(this string description)
         {
             description = IFrameRE.Replace(description, string.Empty);
             description = AOpenRE.Replace(description, string.Empty);
@@ -30,11 +30,8 @@ namespace RSS_Reader.Utils
                 <meta charset=utf-8>
                 <style>
                 body{
-                    font-size:120%;
                     color: #333333;
-                    display: flex;
                     font-family: Arial
-                    flex-direction: column; 
                     padding: 10px;
                 }
                 html, body{
@@ -49,7 +46,7 @@ namespace RSS_Reader.Utils
                 <body>" 
             + "\n"+ description + "\n" +
             @"  </body>
-              </html>";
+            </html>";
             return description;
         }
         

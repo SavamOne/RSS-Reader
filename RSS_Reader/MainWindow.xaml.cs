@@ -17,7 +17,7 @@ namespace RSS_Reader
     {
         ObservableCollection<MainViewModel> ViewModels { get; }
 
-        List<Parameters> Params { get; }
+        IList<RSSParameters> Params { get; }
 
         public MainWindow()
         {
@@ -27,12 +27,14 @@ namespace RSS_Reader
             ViewModels = new ObservableCollection<MainViewModel>();
             ViewModels.CollectionChanged += ViewModels_CollectionChanged;
 
-            Params = new List<Parameters>();
+            Params = new List<RSSParameters>();
 
             foreach(var param in ConfigReaderWriter.Read())
             {
-                if(param.Interval > 1 && RSSChecker.Check(param.URL))
-                    ViewModels.Add(new MainViewModel(param.URL, param.Interval));
+                if (param.Interval > 1 && RSSChecker.Check(param.URL))
+                    ViewModels.Add(new MainViewModel(param));
+                else
+                    Params.Add(param);
             }
 
             SoucesView.ItemsSource = ViewModels;
@@ -40,7 +42,7 @@ namespace RSS_Reader
             if(ViewModels.Count > 0) 
                 FeedView.ItemsSource = ViewModels[0].Items;
 
-            FeedView.SelectionChanged += LstBox_SelectionChanged;
+            FeedView.SelectionChanged += FeedView_SelectionChanged;
 
             SoucesView.SelectionChanged += SoucesView_SelectionChanged;
         }
@@ -49,27 +51,28 @@ namespace RSS_Reader
         {
             if (e.NewItems != null)
             {
-                int index = e.NewStartingIndex;
-                Params.Add(new Parameters(ViewModels[index].Source, ViewModels[index].Interval));
-
-                ViewModels[index].PropertyChanged += (s, pce) => ViewModel_PropertyChanged(s, pce, index);
+                foreach(MainViewModel viewModel in e.NewItems)
+                {
+                    viewModel.PropertyChanged += ViewModel_PropertyChanged;
+                    Params.Add(viewModel.Param);
+                }
                 ConfigReaderWriter.Write(Params);
             }
 
             if (e.OldItems != null)
             {
-                int index = e.OldStartingIndex;
-                Params.RemoveAt(index);
+                foreach (MainViewModel viewModel in e.OldItems)
+                {
+                    Params.Remove(viewModel.Param);
+                }
                 ConfigReaderWriter.Write(Params);
             }
-
         }
 
-        private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e, int index)
+        private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if(e.PropertyName == "Interval")
             {
-                Params[index].Interval = ViewModels[index].Interval;
                 ConfigReaderWriter.Write(Params);
             }
         }
@@ -79,14 +82,14 @@ namespace RSS_Reader
             FeedView.ItemsSource = (SoucesView.SelectedValue as MainViewModel)?.Items;
         }
 
-        private void LstBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {   
+        private void FeedView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
             var item = FeedView.SelectedValue as Item;
             if (item != null)
             {
-                var html = DescriptionPrettifier.Prettify(item.Description);      
+                var html = item.Description.PrettifyDescription();
                 content.NavigateToString(html);
-            } 
+            }
         }
 
         private void AddSource_Click(object sender, RoutedEventArgs e)

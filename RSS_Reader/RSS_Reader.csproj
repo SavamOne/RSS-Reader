@@ -52,6 +52,10 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>RSS_Reader.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup />
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -76,10 +80,15 @@
       <DependentUpon>EditSourcesWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\XML_Parser\XMLParserSerializer.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Utils\DescriptionPrettifier.cs" />
     <Compile Include="Utils\RSSChecker.cs" />
     <Compile Include="Utils\ConfigReaderWriter.cs" />
-    <Compile Include="Models\XML_Parsing_Classes\Config_Classes\Parameters.cs" />
+    <Compile Include="Models\XML_Parsing_Classes\Config_Classes\RSSParameters.cs" />
     <Compile Include="Utils\AddOnConverter.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -120,6 +129,14 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="RSS_Reader.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

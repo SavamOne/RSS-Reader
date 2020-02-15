@@ -1,4 +1,5 @@
-﻿using RSS_Reader.RSS_Classes;
+﻿using RSS_Reader.Config_Classes;
+using RSS_Reader.RSS_Classes;
 using RSS_Reader.Worker;
 using System;
 using System.Collections.ObjectModel;
@@ -10,11 +11,13 @@ namespace RSS_Reader
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        public RSSWorker Worker {get;}
+        public RSSWorker Worker { get; }
 
-        public MainViewModel(string source, double interval)
+        public RSSParameters Param { get => Worker.Param; }
+
+        public MainViewModel(RSSParameters param)
         {
-            Worker = new RSSWorker(source, interval);
+            Worker = new RSSWorker(param);
             Items = new ObservableCollection<Item>();
             Worker.OnNewItemsAdded += MainWidnowViewModel_OnNewItemsAdded;
             Worker.Start();
@@ -42,9 +45,10 @@ namespace RSS_Reader
         public void SetImage(Uri link)
         {
             var bitmapImage = new BitmapImage();
-            bitmapImage.BeginInit();
-            bitmapImage.UriSource = link;
-            bitmapImage.EndInit();
+                bitmapImage.BeginInit();
+                bitmapImage.UriSource = link;
+                bitmapImage.EndInit();
+
             Image = bitmapImage;
         }
 
@@ -53,7 +57,7 @@ namespace RSS_Reader
             get => Worker.Interval;
             set
             {
-                Worker.ChangeInterval(value);
+                Worker.Interval = value;
                 OnPropertyChanged("Interval");
             }
         }

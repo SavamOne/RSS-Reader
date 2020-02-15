@@ -1,8 +1,9 @@
 ﻿<Window x:Class="RSS_Reader.EditSourcesWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:resources="clr-namespace:RSS_Reader.Properties"
         xmlns:converters="clr-namespace:RSS_Reader.Utils"
-        Title="RSS Ридер" Height="450" Width="800"
+        Title="{x:Static resources:Resources.Title}" Height="450" Width="800"
         Background="#faf8f8">
     <ScrollViewer>
         <StackPanel>
@@ -14,7 +15,7 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0">
-                        <TextBlock  Text="URL Источника:"
+                        <TextBlock  Text="{x:Static resources:Resources.URL}"
                                 FontSize="13px" 
                                 FontFamily="Bahnschrift"
                                 Foreground="#333333"
@@ -29,7 +30,7 @@
                              Margin="10 0 10 0"></TextBox>
                     </StackPanel>
                     <StackPanel Grid.Column="1">
-                        <TextBlock Text="Интервал обновления:"
+                        <TextBlock Text="{x:Static resources:Resources.Interval}"
                                 FontSize="13px" 
                                 FontFamily="Bahnschrift"
                                 Foreground="#333333"
@@ -53,7 +54,7 @@
                         Height="30"
                         Margin="10"
                         HorizontalAlignment="Stretch"
-                        Content="Добавить"
+                        Content="{x:Static resources:Resources.Add}"
                 ></Button>
             </StackPanel>
 
@@ -84,7 +85,7 @@
                                             Margin="0 5 0 10"/>
                                 </StackPanel>
                                 <StackPanel>
-                                    <TextBlock  Text="Интервал обновления:"
+                                    <TextBlock  Text="{x:Static resources:Resources.Interval}"
                                             FontSize="13px" 
                                             FontFamily="Bahnschrift"
                                             Foreground="#333333"
@@ -104,7 +105,7 @@
                                          ></TextBox>
                                 </StackPanel>
                             </StackPanel>
-                            <Button Content="Удалить" 
+                            <Button Content="{x:Static resources:Resources.Remove}" 
                                     Click="Delete_Click"
                                     BorderThickness="0"
                                     FontFamily="Bahnschrift" 

@@ -3,9 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:resources="clr-namespace:RSS_Reader.Properties"
         mc:Ignorable="d"
         xmlns:converters="clr-namespace:RSS_Reader.Utils"
-        Title="RSS Ридер" Height="450" Width="800"
+        Title="{x:Static resources:Resources.Title}" Height="450" Width="800"
         x:Name="MainW"
         Background="#faf8f8">
     <Grid>
@@ -52,7 +53,7 @@
                 x:Name="ReadSource" 
                 VerticalAlignment="Stretch" 
                 HorizontalAlignment="Stretch" 
-                Content="Настройки" 
+                Content="{x:Static resources:Resources.Settings}" 
                 FontSize="12px" 
                 Foreground="#b3b3b3"
                 Background="#e6e6e6"
@@ -116,7 +117,7 @@
                         />
             <Button Grid.Row="1" x:Name="OpenLink" 
                 VerticalAlignment="Stretch" 
-                Content="Открыть источник" 
+                Content="{x:Static resources:Resources.OpenFull}" 
                 FontSize="12px" 
                 Foreground="#b3b3b3"
                 Background="#e6e6e6"

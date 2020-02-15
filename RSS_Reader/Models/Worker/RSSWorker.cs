@@ -1,4 +1,5 @@
-﻿using RSS_Reader.RSS_Classes;
+﻿using RSS_Reader.Config_Classes;
+using RSS_Reader.RSS_Classes;
 using RSS_Reader.XML_Parser;
 using System;
 using System.Collections.Generic;
@@ -15,47 +16,51 @@ namespace RSS_Reader.Worker
 
         public event newItemsAdded OnNewItemsAdded;
 
+        public RSSParameters Param { get; }
+
         private DispatcherTimer Timer { get; }
 
-        public double Interval { get; private set; }
+        public double Interval { 
+            get => Param.Interval; 
+            set
+            {
+                Param.Interval = value;
 
-        public string Source { get; }
+                if(Timer!= null)
+                {
+                    Timer.Stop();
+                    Timer.Interval = TimeSpan.FromSeconds(Param.Interval);
+                    Timer.Start();
+                }
+            }
+        }
+
+        public string Source { get => Param.URL; }
 
         private XmlDocument Document { get; }
 
         private object Locker { get; } = new object();
 
         
-        public RSSWorker(string source, double interval)
+        public RSSWorker(RSSParameters param)
         {
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072;
             ServicePointManager.DefaultConnectionLimit = 9999;
 
-            Interval = interval;
-            Source = source;
+            Param = param;
 
             Document = new XmlDocument();
 
             ItemsAll = new List<Item>();
             ItemsDelta = new List<Item>();
 
-            Timer = new DispatcherTimer
+            Timer = new DispatcherTimer()
             {
-                Interval = TimeSpan.FromSeconds(interval)
+                Interval = TimeSpan.FromSeconds(Interval)
             };
 
             Timer.Tick += (async (s, e) => await DoWorkAsync());
-        }
-
-        public void ChangeInterval(double interval)
-        {
-            Interval = interval;
-            Timer.Stop();
-            Timer.Interval = TimeSpan.FromMilliseconds(Interval);
-            Timer.Start();
-
-            Console.WriteLine("Новый интервал");
         }
 
         public Task Start()

@@ -10,17 +10,18 @@ namespace RSS_Reader.Utils
 {
     public static class ConfigReaderWriter
     {
-        static string FileName { get; } = "data.xml";
-        static string FileNameSecond { get; } = "data2.xml";
+        static string FileName { get; }
+
+        static string FileError { get; }
 
         static Timer Timer { get; }
 
-        static IList<Parameters> Data;
+        static IList<RSSParameters> Data;
 
         static ConfigReaderWriter()
         {
             FileName = "data.xml";
-            FileNameSecond = "data2.xml";
+            FileError = "data_error.xml";
 
             Timer = new Timer() { Interval = 1000, AutoReset = false };
             Timer.Elapsed += Timer_Elapsed;
@@ -35,59 +36,55 @@ namespace RSS_Reader.Utils
             Indent = true,
         };
 
-        public static IList<Parameters> Read()
-        {      
+        public static IList<RSSParameters> Read()
+        {
             try
             {
-                if(File.Exists(FileName))
+                if (File.Exists(FileName))
                 {
                     XmlDocument document = new XmlDocument();
                     document.Load(FileName);
-                    IList<Parameters> list = XMLParser.DeserializeList<List<Parameters>>(document.DocumentElement, "parameter");
+                    IList<RSSParameters> list = XMLParser.DeserializeList<List<RSSParameters>>(document.DocumentElement, "parameter");
                     if (list != null)
                         return list;
                 }
             }
             catch(Exception e)
             {
-                Console.WriteLine(e.ToString());  
-            }
+                try
+                {
+                    File.Move(FileName, FileError);
+                }
+                catch {}
+                Console.WriteLine(e.ToString());
+           }
 
-            return new List<Parameters>() { new Parameters("https://habr.com/ru/rss/interesting/", 30000)}; 
+            return new List<RSSParameters>() { new RSSParameters("https://habr.com/ru/rss/interesting/", 30)}; 
         }
 
-        public static void Write(IList<Parameters> source)
+        public static void Write(IList<RSSParameters> source)
         {
-            Console.WriteLine("Ожидание");
             Timer.Stop();
 
             Data = source;
 
             Timer.Start();
-
         }
 
         private static void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            Console.WriteLine("Дождались");
             try
             {
                 XmlDocument document = XMLParser.SerializeList(Data, "items", "parameter");
-                using (XmlWriter reader = XmlWriter.Create(FileNameSecond, WriterSettings))
+                using (XmlWriter reader = XmlWriter.Create(FileName, WriterSettings))
                 {
                     document.Save(reader);
                 }
-
-                if (File.Exists(FileName))
-                    File.Delete(FileName);
-
-                File.Move(FileNameSecond, FileName);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
             }
-            Console.WriteLine("Записано");
         }
     }
 }

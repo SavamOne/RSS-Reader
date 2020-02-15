@@ -1,4 +1,5 @@
-﻿using RSS_Reader.Models;
+﻿using RSS_Reader.Config_Classes;
+using RSS_Reader.Models;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,10 +43,14 @@ namespace RSS_Reader
             {
                 if (interval <= 0)
                     return;
-                ViewModels.Add(new MainViewModel(source, interval));
+                ViewModels.Add(new MainViewModel(new RSSParameters(source, interval)));
                 Source.Text = string.Empty;
                 Interval.Text = string.Empty;
             }
+            else
+                MessageBox.Show($"Неправильные параметры для {source}.\n" +
+                                 "Ссылка должна указывать на RSS-источник, а интервал обновления должен быть >1 сек.", 
+                                 "Ошибка при добавлении источника");
         }
     }
 }
