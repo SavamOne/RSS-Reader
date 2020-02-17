@@ -45,10 +45,8 @@ namespace RSS_Reader
         private void Add_Click(object sender, RoutedEventArgs e)
         {
             string source = Source.Text;
-            if (RSSChecker.Check(source) && double.TryParse(Interval.Text, out double interval))
+            if (RSSChecker.Check(source) && double.TryParse(Interval.Text, out double interval) && interval > 1)
             {
-                if (interval <= 1)
-                    return;
                 ViewModels.Add(new MainViewModel(new RSSParameters(source, interval)));
                 Source.Text = string.Empty;
                 Interval.Text = string.Empty;

@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<items>
+  <parameter>
+    <source>https://habr.com/ru/rss/interesting/</source>
+    <updateInterval>60</updateInterval>
+  </parameter>
+  <parameter>
+    <source>https://lenta.ru/rss/news</source>
+    <updateInterval>30</updateInterval>
+  </parameter>
+  <parameter>
+    <source>https://habr.com/ru/rss/all/</source>
+    <updateInterval>80</updateInterval>
+  </parameter>
+</items>
