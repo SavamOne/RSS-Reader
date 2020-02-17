@@ -9,6 +9,11 @@ using System.Windows.Media.Imaging;
 
 namespace RSS_Reader
 {
+    /// <summary>
+    /// Главный (и единственный) ViewModel - связь между MainWindow + EditSourcesWindows и RSSWorker
+    /// Выполняет INotifyPropertyChanged для того, чтобы значения (заголовок, изображение, интервал, источник) 
+    /// обновлялись во View и чтобы RSSWorker получал изменения из вне.
+    /// </summary>
     public class MainViewModel : INotifyPropertyChanged
     {
         public RSSWorker Worker { get; }
@@ -23,6 +28,10 @@ namespace RSS_Reader
             Worker.Start();
         }
 
+        /// <summary>
+        /// событие OnNewItemsAdded - при получении новых данных от RSSWorker - добавить новые данные в INPC-свойста, а список Items добавить в 
+        /// ObservableCollection
+        /// </summary>
         private void MainWidnowViewModel_OnNewItemsAdded(StoreClass store)
         {
             SetImage(store.Image.Url);
@@ -42,6 +51,10 @@ namespace RSS_Reader
 
         public ObservableCollection<Item> Items { get; }
 
+
+        /// <summary>
+        /// создание изображения из ссылки на изображение
+        /// </summary>
         public void SetImage(Uri link)
         {
             var bitmapImage = new BitmapImage();
@@ -52,6 +65,10 @@ namespace RSS_Reader
             Image = bitmapImage;
         }
 
+
+        /// <summary>
+        /// При изменении интервала - изменить интервал в Worker
+        /// </summary>
         public double Interval
         {
             get => Worker.Interval;

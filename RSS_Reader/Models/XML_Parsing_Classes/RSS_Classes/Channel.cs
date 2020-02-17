@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace RSS_Reader.RSS_Classes
 {
+    /// <summary>
+    /// Структура элемента Channel в RSS
+    /// </summary>
     public class Channel : IXML
     {
         [XMLProperty("title")]

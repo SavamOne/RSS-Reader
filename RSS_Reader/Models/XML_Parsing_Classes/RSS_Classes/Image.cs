@@ -3,6 +3,9 @@ using System;
 
 namespace RSS_Reader.RSS_Classes
 {
+    /// <summary>
+    /// Структура элемента Image в RSS
+    /// </summary>
     public class Image : IXML
     {
         [XMLProperty("link")]

@@ -5,6 +5,9 @@ using System.Windows.Markup;
 
 namespace RSS_Reader.Utils
 {
+    /// <summary>
+    /// Утилита для XAML для того, чтобы можно было добавить/вычесть из какого-либо значения. Например, вычесть parameter из длины элемента управления родителя
+    /// </summary>
     public class AddOnConverter : MarkupExtension, IValueConverter
     {
         private static AddOnConverter Instance;

@@ -13,6 +13,9 @@ using RSS_Reader.Utils;
 
 namespace RSS_Reader
 {
+    /// <summary>
+    /// Логика взаимодействия для MainWindow.xaml
+    /// </summary>
     public partial class MainWindow : Window
     {
         ObservableCollection<MainViewModel> ViewModels { get; }
@@ -23,13 +26,17 @@ namespace RSS_Reader
         {
             InitializeComponent();
 
-       
+            ///Создание списка ViewModel и привязка на событие изменения коллекции
             ViewModels = new ObservableCollection<MainViewModel>();
             ViewModels.CollectionChanged += ViewModels_CollectionChanged;
 
+
+            ///Создание списка параметров(источник+интервал)
             Params = new List<RSSParameters>();
 
-            foreach(var param in ConfigReaderWriter.Read())
+            ///Прочитать параметры из конфига, если параметры не удолетворяют - добавить эти параметры в список параметров просто так,
+            ///если параметры удолетворяют - создать ViewModel в списке (событие CollectionChanged так же потом добавит параметры этой ViewModel в список параметров)
+            foreach (var param in ConfigReaderWriter.Read())
             {
                 if (param.Interval > 1 && RSSChecker.Check(param.URL))
                     ViewModels.Add(new MainViewModel(param));
@@ -37,6 +44,7 @@ namespace RSS_Reader
                     Params.Add(param);
             }
 
+            ///Назначить источники данных и обработчки событий
             SoucesView.ItemsSource = ViewModels;
 
             if(ViewModels.Count > 0) 
@@ -51,7 +59,10 @@ namespace RSS_Reader
         {
             if (e.NewItems != null)
             {
-                foreach(MainViewModel viewModel in e.NewItems)
+                ///Если появились новые ViewModel, то добавить ее параметры в список параметров + назначить обработчик 
+                ///события PropertyChanged из интерфейса INotifyPropertyChanged
+                /// + записать эти параметры в конфиг-файл
+                foreach (MainViewModel viewModel in e.NewItems)
                 {
                     viewModel.PropertyChanged += ViewModel_PropertyChanged;
                     Params.Add(viewModel.Param);
@@ -61,6 +72,8 @@ namespace RSS_Reader
 
             if (e.OldItems != null)
             {
+                ///Если удалилась ViewModel, то удалить ее параметры из списка параметров
+                /// + записать эти параметры в конфиг-файл
                 foreach (MainViewModel viewModel in e.OldItems)
                 {
                     Params.Remove(viewModel.Param);
@@ -71,7 +84,8 @@ namespace RSS_Reader
 
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == "Interval")
+            ///Если поменялся интервал, то записать параметры в конфиг-файл
+            if (e.PropertyName == "Interval")
             {
                 ConfigReaderWriter.Write(Params);
             }

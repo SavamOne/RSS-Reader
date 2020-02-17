@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 namespace RSS_Reader.RSS_Classes
 {
+    /// <summary>
+    /// Структура элемента Item в RSS
+    /// + переопределение методов Equals и GetHashCode для последущего отличия двух объектов Item друг от друга
+    /// </summary>
     public class Item : IXML
     {
         [XMLProperty("title")]

@@ -8,8 +8,17 @@ using System.Xml;
 
 namespace RSS_Reader.XML_Parser
 {
+    /// <summary>
+    /// Собственная реализация сереализатора/десереализатора XML.
+    /// Поддерживает типы, которые выполняют IXML, System.Uri, типы, выполняющие IConvertible, а также списки с этими типами в качестве обобщенных.
+    /// </summary>
     public static partial class XMLParser
     {
+        /// <summary>
+        /// Возвращает словарь свойств типа, которые содержат аттрибут XMLPropertyAttribute.
+        /// Ключ - значение аттрибута, значение - PropertyInfo свойства
+        /// </summary>
+        /// <param name="item">Объект типа Т, для которого необходимо вернуть словарь свойств</param>
         private static Dictionary<string, PropertyInfo> GetPropertyInfo<T>(T item)
         {
             return item.GetType().GetProperties()
@@ -23,6 +32,11 @@ namespace RSS_Reader.XML_Parser
                     );
         }
 
+        /// <summary>
+        /// Выполняет десереализацию типа Т. 
+        /// Создает объект типа T и вызывает функцию DeserializeInto
+        /// </summary>
+        /// <param name="element">XML-узел, от которого необходимо начать десереализацию</param>
         public static T Deserialize<T>(XmlNode element) where T : new()
         {
             T item = new T();
@@ -33,6 +47,13 @@ namespace RSS_Reader.XML_Parser
         }
 
 
+        /// <summary>
+        /// Выполняет десереализацию типа Т. 
+        /// Получает список свойств объекта, затем проходит по всем детям XmlNode, если нашлось совпадение "тег ребенка" - "значение аттрибута", 
+        /// выполняется заполнение этого свойства данными (либо InnerText ребенка, либо вызов FillList, FillIXML).
+        /// </summary>
+        /// <param name="element">XML-узел от которого необходимо начать десереализацию</param>
+        /// <param name="item">Объект типа Т, в который необходимо записать информацию</param>
         public static void DeserializeInto<T>(XmlNode element, T item) where T : new()
         {
             var elementChilds = element.ChildNodes;
@@ -56,7 +77,6 @@ namespace RSS_Reader.XML_Parser
                             Console.WriteLine(e.ToString());
                         }
                     }
-                        
 
                     else if (property.PropertyType == typeof(Uri))
                     {
@@ -75,6 +95,15 @@ namespace RSS_Reader.XML_Parser
             }
         }
 
+        /// <summary>
+        /// Выполняет десереализацию списка. 
+        /// Отличие от Deserialize в том, что DeserializeList десериализирует сразу относительно обобщенного типа этого списка, 
+        /// а не относительно самого списка.
+        /// </summary>
+        /// <example>Если бы необходимо было десериализовать список при помощи Deserialize, нужно было создать класс-"заглушку", выполняющий IXML,
+        /// со свойством - список, а также с аттрибутом для этого списка</example>
+        /// <param name="element">XML-элемент от которого необходимо начать десереализацию</param>
+        /// <param name="objAttrName">Тег ребенка element, который будет являться "объединяющим" для всех элементов списка</param>
         public static T DeserializeList<T>(XmlNode element, string objAttrName) where T : IList
         {
             int i = 0;
@@ -84,6 +113,13 @@ namespace RSS_Reader.XML_Parser
             return default;
         }
 
+
+        /// <summary>
+        /// Заполняет данными объект, выполняющий IXML. 
+        /// Вызывается при помощи рефлексии метод Deserialize
+        /// </summary>
+        /// <param name="child">XML-элемент от которого необходимо начать десереализацию</param>
+        /// <param name="type">Type типа, выполняющего IXML</param>
         private static object FillIXML(XmlNode child, Type type)
         {
             MethodInfo methodInfo = typeof(XMLParser).GetMethod("Deserialize");
@@ -92,6 +128,13 @@ namespace RSS_Reader.XML_Parser
             return genericMethod.Invoke(null, new object[] { child }); ;
         }
 
+        /// <summary>
+        /// Заполняет данными список.
+        /// Пока список XML узлов одинакового имени - значит, десериализовать этот узел и добавить объект в список.
+        /// Создается и заполняется список при помощи рефелксии методом Deserialize
+        /// </summary>
+        /// <param name="child">XML-элемент от которого необходимо начать десереализацию</param>
+        /// <param name="type">Type типа, выполняющего IXML</param>
         private static object FillList(ref int index, XmlNodeList elementChilds, string neededAttribute, Type type)
         {
             Type genericType = type.GetGenericArguments()[0];

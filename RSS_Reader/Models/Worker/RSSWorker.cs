@@ -10,6 +10,9 @@ using System.Xml;
 
 namespace RSS_Reader.Worker
 {
+    /// <summary>
+    /// Главный Worker, который раз в Interval отправляет запрос на RSS-ссылку(Source) и собирает с него информацию
+    /// </summary>
     public class RSSWorker : StoreClass, IWorker
     {
         public delegate void newItemsAdded(StoreClass store);
@@ -44,6 +47,7 @@ namespace RSS_Reader.Worker
         
         public RSSWorker(RSSParameters param)
         {
+            //Для работы с https
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072;
             ServicePointManager.DefaultConnectionLimit = 9999;
@@ -74,6 +78,12 @@ namespace RSS_Reader.Worker
             Timer.Stop();
         }
 
+
+        /// <summary>
+        /// Метод десериализует в объект типа Channel (в данном случае в сам RSSWorker, т.к. он наследуется от StoreClass, а он наследуется от Channel)
+        /// После того, как свойства типа Channel заполнены, заполняются свойства типа StoreClass (ItemsAll и ItemsDelta). Если хотя бы 1 элемент попал в ItemsDelta,
+        /// то вызывается событыие OnNewItemsAdded.
+        /// </summary>
         private async Task DoWorkAsync()
         {
             bool isSmthngNew = false;

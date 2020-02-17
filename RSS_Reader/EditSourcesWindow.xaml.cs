@@ -26,6 +26,9 @@ namespace RSS_Reader
             Close();
         }
 
+        /// <summary>
+        /// Удаляет выбранную ViewModel (т.к. список имеет привзяку к событию CollectionChanged, то и с последующей обработкой этого события)
+        /// </summary>
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
@@ -36,12 +39,15 @@ namespace RSS_Reader
             }
         }
 
+        /// <summary>
+        /// добавляет выбранную ViewModel (т.к. список имеет привзяку к событию CollectionChanged, то и с последующей обработкой этого события)
+        /// </summary>
         private void Add_Click(object sender, RoutedEventArgs e)
         {
             string source = Source.Text;
             if (RSSChecker.Check(source) && double.TryParse(Interval.Text, out double interval))
             {
-                if (interval <= 0)
+                if (interval <= 1)
                     return;
                 ViewModels.Add(new MainViewModel(new RSSParameters(source, interval)));
                 Source.Text = string.Empty;

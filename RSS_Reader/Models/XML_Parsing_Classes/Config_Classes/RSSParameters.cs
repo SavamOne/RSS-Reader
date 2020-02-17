@@ -2,6 +2,10 @@
 
 namespace RSS_Reader.Config_Classes
 {
+    /// <summary>
+    /// Структура элемента XML, необходимый для чтения/записи информации о RSS-канале
+    /// +передается как аргумент в RSSWorker
+    /// </summary>
     public class RSSParameters : IXML
     {
         [XMLProperty("source")]

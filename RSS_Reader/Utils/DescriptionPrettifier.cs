@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace RSS_Reader.Utils
 {
+    /// <summary>
+    /// Оптимизация HTML-кода в item->description.
+    /// Форматирует HTML.
+    /// Удаляет все IFrame, а так же убирает ссылки
+    /// </summary>
     public static class DescriptionPrettifier
     {
         static Regex IFrameRE { get; }

@@ -8,6 +8,9 @@ using System.Xml;
 
 namespace RSS_Reader.Utils
 {
+    /// <summary>
+    /// Чтение и запись конфига программы
+    /// </summary>
     public static class ConfigReaderWriter
     {
         static string FileName { get; }
@@ -36,6 +39,9 @@ namespace RSS_Reader.Utils
             Indent = true,
         };
 
+        /// <summary>
+        /// Читает XML-файл именем FileName и возвращается список из объектов типа RSSParameter
+        /// </summary>
         public static IList<RSSParameters> Read()
         {
             try
@@ -51,6 +57,7 @@ namespace RSS_Reader.Utils
             }
             catch(Exception e)
             {
+                /// Если произошло исключение, например, XML имеет неправильный формат, то переименовать этот файл в "файл с ошшибкой"
                 try
                 {
                     File.Move(FileName, FileError);
@@ -59,9 +66,14 @@ namespace RSS_Reader.Utils
                 Console.WriteLine(e.ToString());
            }
 
+            ///Если прочитать не удалось, то по умолчанию из источников будет только Habr.com (как написано в ТЗ)
             return new List<RSSParameters>() { new RSSParameters("https://habr.com/ru/rss/interesting/", 30)}; 
         }
 
+        /// <summary>
+        /// Записывает список из RSSParameter в XML-файл с именем FileName
+        /// Запись происходит не сразу, а через 1 секунду, чтобы подождать еще изменения в списке из RSSParameter
+        /// </summary>
         public static void Write(IList<RSSParameters> source)
         {
             Timer.Stop();

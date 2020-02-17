@@ -8,8 +8,15 @@ using System.Xml;
 
 namespace RSS_Reader.XML_Parser
 {
+
    public static partial class XMLParser
    {
+        /// <summary>
+        /// Выполняет сереализацию объекта. 
+        /// Создает XmlDocument с корневым узлом rootName и вызывает функцию SerializeInto
+        /// </summary>
+        /// <param name="item">объект, который необходимо сериализовать</param>
+        /// <param name="rootName">Тег корневого узла в XML-документе</param>
         public static XmlDocument Serialize(object item, string rootName)
         {
             XmlDocument document = new XmlDocument();
@@ -23,7 +30,15 @@ namespace RSS_Reader.XML_Parser
             return document;
         }
 
-        public static XmlDocument SerializeList<T>(T list, string rootName, string listAttrName) where T : IEnumerable
+
+        /// <summary>
+        /// Выполняет сереализацию списка. 
+        /// Отличие от Serialize в том, что SerializeList сериализирует сразу объекты этого списка, а сначала сам список.
+        /// </summary>
+        /// <param name="list">Список, который необходимо сериализовать</param>
+        /// <param name="rootName">Тег корневого узла в XML-документе</param>
+        /// <param name="listAttrName">Тег ребенка element, которым будут "обворачиваться" элементы этого списка/param>
+        public static XmlDocument SerializeList<T>(IEnumerable<T> list, string rootName, string listAttrName)
         {
             XmlDocument document = new XmlDocument();
             document.CreateXmlDeclaration("1.0", "utf-8", null);
@@ -43,6 +58,13 @@ namespace RSS_Reader.XML_Parser
             return document;
         }
 
+        /// <summary>
+        /// Выполняет десереализацию объекта. 
+        /// Получает список свойств объекта, затем проходит по всем детям XmlNode, если нашлось совпадение "тег ребенка" - "значение аттрибута", 
+        /// создается XML-узел с данными из свойства этого объекта (значение свойства или сериализация объекта этого свойства)
+        /// </summary>
+        /// <param name="item">Объект, который необходимо сериализовать/param>
+        /// <param name="xml">XML-узел, в который необходимо записать данные</param>
         public static void SerializeInto(object item, XmlElement xml)
         {
             var propertiesDict = GetPropertyInfo(item);

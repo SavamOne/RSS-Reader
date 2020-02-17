@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 
 namespace RSS_Reader.Models
 {
+    /// <summary>
+    /// Проверка на RSS. 
+    /// Если в первых 200 байтах содержится <rss ... version="2.0">, то это - RSS
+    /// </summary>
     public static class RSSChecker
     {
         static Regex RSSRegex { get; } = new Regex(@"<rss[\s\S]*version=""2.0""");
